@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Color;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -11,8 +9,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
-@TeleOp(name = "TeleOp2020_3", group = "Sample")
-public class TeleOp2020_3 extends LinearOpMode{
+@TeleOp(name = "teleop       linear                slide", group = "Sample")
+public class TeleOpLinearSlide extends LinearOpMode{
 
     //declare motors
     private DcMotor driveFLM;
@@ -27,8 +25,7 @@ public class TeleOp2020_3 extends LinearOpMode{
     //declare swervos
     private Servo succLeftS;
     private Servo succRghtS;
-    private Servo armS;
-    private Servo clawS;
+    private Servo slideS;
     private Servo stoneS;
     private Servo skystoneLeftS;
     private Servo skystoneRghtS;
@@ -85,8 +82,7 @@ public class TeleOp2020_3 extends LinearOpMode{
             //configure swervos
             succLeftS         = hardwareMap.servo.get("succLeftS");
             succRghtS         = hardwareMap.servo.get("succRightS");
-            armS              = hardwareMap.servo.get("slideS");
-            clawS             = hardwareMap.servo.get("clawS");
+            slideS            = hardwareMap.servo.get("slideS");
             stoneS            = hardwareMap.servo.get("stoneS");
             skystoneLeftS     = hardwareMap.servo.get("skystoneLeftS");
             skystoneRghtS     = hardwareMap.servo.get("skystoneRightS");
@@ -94,7 +90,7 @@ public class TeleOp2020_3 extends LinearOpMode{
             skystoneGrabRghtS = hardwareMap.servo.get("skystoneGrabRightS");
             waffleForeS       = hardwareMap.servo.get("waffleFrontS");
             waffleBackS       = hardwareMap.servo.get("waffleBackS");
-            //flipperS          = hardwareMap.servo.get("flipperS");
+            flipperS          = hardwareMap.servo.get("flipperS");
             
             //color sensor initialize
             //ColorSensorOfStone = hardwareMap.colorSensor.get("stoneCS");
@@ -221,11 +217,11 @@ public class TeleOp2020_3 extends LinearOpMode{
                 }
             }
 
-           /* if (gamepad1.x) {
+            if (gamepad1.x) {
                 flipperUp = !flipperUp;
             }
             if (flipperUp) flipperS.setPosition(0);
-            if (!flipperUp) flipperS.setPosition(1);*/
+            if (!flipperUp) flipperS.setPosition(1);
 
             //if (gamepad2.back) MikeMode = !MikeMode;
             
@@ -249,16 +245,8 @@ public class TeleOp2020_3 extends LinearOpMode{
              
             if (gamepad2.a) stoneS.setPosition(1.0);
             if (gamepad2.b) stoneS.setPosition(0.24);
-            
-            if (gamepad2.left_trigger>0.1) {
-                armS.setPosition(0.00);
-                clawS.setPosition(0.05);
-            }else {
-                if (gamepad2.right_trigger>0.1) {
-                    armS.setPosition(0.85);
-                    clawS.setPosition(0.90);
-                }
-            }
+
+            slideS.setPosition((gamepad2.left_stick_x+1)*0.5);
 
             if (gamepad2.x) liftStone();
             if (gamepad2.y) dropStone();
@@ -266,82 +254,25 @@ public class TeleOp2020_3 extends LinearOpMode{
             /**all this crap below is staging and automatic stuff for the vertical claw*/
             //go down all the way
             if (gamepad2.left_stick_button) {
-                armS.setPosition(0.00);
-                clawS.setPosition(0.05);
-                stoneS.setPosition(1.00);
-                Thread.sleep(500);
-                verticalRghtM.setTargetPosition(0);
-                verticalLeftM.setTargetPosition(0);
-                verticalRghtM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                verticalLeftM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                verticalLeftM.setPower(-1.00);
-                verticalRghtM.setPower(-1.00);
+                    verticalRghtM.setTargetPosition(0);
+                    verticalLeftM.setTargetPosition(0);
+                    verticalRghtM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    verticalLeftM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    verticalLeftM.setPower(-1.00);
+                    verticalRghtM.setPower(-1.00);
                     
-                while (verticalRghtM.isBusy() && !stopDown) {
-                    if (gamepad2.right_stick_button) {
-                        stopDown = true;
-                    }
-
-                    if (gamepad1.left_stick_button) {
-                        driveSpeed = 0.25;
-                    } else {
-                        if (gamepad1.right_stick_button) {
-                            driveSpeed = 0.6;
+                    while (verticalRghtM.isBusy() && !stopDown) {
+                        if (gamepad2.right_stick_button) {
+                            stopDown = true;
                         }
                     }
-
-                    driveFLM.setPower((-gamepad1.left_stick_y + gamepad1.left_stick_x + gamepad1.right_stick_x) * driveSpeed);
-                    driveFRM.setPower((-gamepad1.left_stick_y - gamepad1.left_stick_x - gamepad1.right_stick_x) * driveSpeed);
-                    driveBLM.setPower((-gamepad1.left_stick_y - gamepad1.left_stick_x + gamepad1.right_stick_x) * driveSpeed);
-                    driveBRM.setPower((-gamepad1.left_stick_y + gamepad1.left_stick_x - gamepad1.right_stick_x) * driveSpeed);
-
-                    if (gamepad1.a) {
-                        succLeftM.setPower(0.7);
-                        succRghtM.setPower(0.7);
-                        stoned = true;
-                    } else {
-                        if (gamepad1.b) {
-                            succLeftM.setPower(0);
-                            succRghtM.setPower(0);
-                        } else {
-                            if (gamepad1.y) {
-                                succLeftM.setPower(-0.7);
-                                succRghtM.setPower(-0.7);
-                            }
-                        }
-                    }
-
-                    if (gamepad1.right_bumper) {
-                        succLeftS.setPosition(0.60);
-                        succRghtS.setPosition(0.40);
-                    } else {
-                        if (gamepad1.left_bumper) {
-                            succLeftS.setPosition(1);
-                            succRghtS.setPosition(0);
-                        } else {
-                            if (gamepad1.right_trigger > 0.1) {
-                                succLeftS.setPosition(0.25);
-                                succRghtS.setPosition(0.75);
-                            }else {
-                        /*if (stoned && hsvValues[0]<90) {
-                            succLeftM.setPower(0);
-                            succRghtM.setPower(0);
-                            succLeftS.setPosition(1);
-                            succRghtS.setPosition(0);
-                            stoned = false;
-                        }*/
-                            }
-                        }
-                    }
+                    
+                    stopDown = false;
+                    verticalLeftM.setPower(0);
+                    verticalRghtM.setPower(0);
+                    verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    verticalRghtM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 }
-                    
-                stopDown = false;
-                verticalLeftM.setPower(0);
-                verticalRghtM.setPower(0);
-                verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                verticalRghtM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                stoneS.setPosition(0.24);
-            }
 
             //find the stage number
             if (true) {
