@@ -1,7 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -16,8 +19,8 @@ public class TeleOp2020_3 extends LinearOpMode{
     private DcMotor driveFRM;
     private DcMotor driveBLM;
     private DcMotor driveBRM;
-    private DcMotor stoneLeftM;
-    private DcMotor stoneRghtM;
+    private DcMotor succLeftM;
+    private DcMotor succRghtM;
     private DcMotor verticalLeftM;
     private DcMotor verticalRghtM;
 
@@ -34,11 +37,17 @@ public class TeleOp2020_3 extends LinearOpMode{
     private Servo waffleBackS;
     private Servo flipperS;
 
-    private double driveSpeed = 0.6;
-    private boolean MikeMode = true;
-    private boolean flipperUp = false;
-    private int i = 0;
+    //sensor of color
+    private ColorSensor ColorSensorOfStone;
+    private float[] hsvValues = {0F, 0F, 0F};
+    final float[] values = hsvValues;
     
+    //epic things keeping track of things
+    private double driveSpeed = 0.6;
+    private boolean flipperUp = false;
+    private boolean stoned = false;
+    
+    //staging stuff
     private boolean stopDown = false;
     private double stageNum = 0;
     private double stageTarget;
@@ -46,6 +55,7 @@ public class TeleOp2020_3 extends LinearOpMode{
     private boolean isStagingUp = false;
     private boolean isStagingDown = false;
 
+    //more staging stuff
     private final int stage0 = 0;
     private final int stage1 = 600;
     private final int stage2 = 1080;
@@ -57,19 +67,19 @@ public class TeleOp2020_3 extends LinearOpMode{
 
     @Override
     public void
-    runOpMode() {
+    runOpMode() throws InterruptedException {
 
         //configuration
         if (true) {
             //configure motors
-            driveFLM   = hardwareMap.dcMotor.get("driveFLM");
-            driveFRM   = hardwareMap.dcMotor.get("driveFRM");
-            driveBLM   = hardwareMap.dcMotor.get("driveBLM");
-            driveBRM   = hardwareMap.dcMotor.get("driveBRM");
-            stoneLeftM = hardwareMap.dcMotor.get("succLeftM");
-            stoneRghtM = hardwareMap.dcMotor.get("succRightM");
-            verticalLeftM  = hardwareMap.dcMotor.get("verticalLeftM");
-            verticalRghtM  = hardwareMap.dcMotor.get("verticalRightM");
+            driveFLM      = hardwareMap.dcMotor.get("driveFLM");
+            driveFRM      = hardwareMap.dcMotor.get("driveFRM");
+            driveBLM      = hardwareMap.dcMotor.get("driveBLM");
+            driveBRM      = hardwareMap.dcMotor.get("driveBRM");
+            succLeftM     = hardwareMap.dcMotor.get("succLeftM");
+            succRghtM     = hardwareMap.dcMotor.get("succRightM");
+            verticalLeftM = hardwareMap.dcMotor.get("verticalLeftM");
+            verticalRghtM = hardwareMap.dcMotor.get("verticalRightM");
 
             //configure swervos
             succLeftS         = hardwareMap.servo.get("succLeftS");
@@ -83,14 +93,17 @@ public class TeleOp2020_3 extends LinearOpMode{
             waffleForeS       = hardwareMap.servo.get("waffleFrontS");
             waffleBackS       = hardwareMap.servo.get("waffleBackS");
             flipperS          = hardwareMap.servo.get("flipperS");
+            
+            //color sensor initialize
+            //ColorSensorOfStone = hardwareMap.colorSensor.get("stoneCS");
 
             //set motor directions
             driveFLM.setDirection(DcMotor.Direction.FORWARD);
             driveFRM.setDirection(DcMotor.Direction.REVERSE);
             driveBLM.setDirection(DcMotor.Direction.FORWARD);
             driveBRM.setDirection(DcMotor.Direction.REVERSE);
-            stoneLeftM.setDirection(DcMotor.Direction.FORWARD);
-            stoneRghtM.setDirection(DcMotor.Direction.REVERSE);
+            succLeftM.setDirection(DcMotor.Direction.FORWARD);
+            succRghtM.setDirection(DcMotor.Direction.REVERSE);
             verticalLeftM.setDirection(DcMotorSimple.Direction.REVERSE);
             verticalRghtM.setDirection(DcMotorSimple.Direction.FORWARD);
 
@@ -99,8 +112,8 @@ public class TeleOp2020_3 extends LinearOpMode{
             driveFRM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             driveBLM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             driveBRM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            stoneLeftM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            stoneRghtM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            succLeftM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            succRghtM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
             //use encoders for this slidey boi
             verticalLeftM.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -128,14 +141,11 @@ public class TeleOp2020_3 extends LinearOpMode{
         waffleBackS.setPosition(1.00);
 
         while(opModeIsActive()) {
-            
-            i++;
-            telemetry.addData("i", i);
-            telemetry.addData("encoder data left", verticalLeftM.getCurrentPosition());
             telemetry.addData("encoder data right", verticalRghtM.getCurrentPosition());
-            telemetry.addData("average encoder position", (verticalLeftM.getCurrentPosition()+verticalRghtM.getCurrentPosition())*0.5);
             telemetry.addData("stage number uwu", stageNum);
             telemetry.update();
+
+            //Color.RGBToHSV((ColorSensorOfStone.red()*255), (ColorSensorOfStone.green()*255), (ColorSensorOfStone.blue()*255), hsvValues);
 
             //KV can change how fast he drives.
             if (gamepad1.left_stick_button) {
@@ -156,16 +166,17 @@ public class TeleOp2020_3 extends LinearOpMode{
 
             //KV can start, stop, and reverse the succ motors
             if (gamepad1.a) {
-                stoneLeftM.setPower(0.7);
-                stoneRghtM.setPower(0.7);
+                succLeftM.setPower(0.7);
+                succRghtM.setPower(0.7);
+                stoned = true;
             } else {
                 if (gamepad1.b) {
-                    stoneLeftM.setPower(0);
-                    stoneRghtM.setPower(0);
+                    succLeftM.setPower(0);
+                    succRghtM.setPower(0);
                 } else {
                     if (gamepad1.y) {
-                        stoneLeftM.setPower(-0.7);
-                        stoneRghtM.setPower(-0.7);
+                        succLeftM.setPower(-0.7);
+                        succRghtM.setPower(-0.7);
                     }
                 }
             }
@@ -175,8 +186,6 @@ public class TeleOp2020_3 extends LinearOpMode{
             //'stoned' boolean is basically whether the sensor is active or not
             //so that KV can move the succ motors out and the sensor wont keep trying to pull it in
             if (gamepad1.right_bumper) {
-                //succLeftS.setPosition(0.53);
-                //succRghtS.setPosition(0.53);
                 succLeftS.setPosition(0.60);
                 succRghtS.setPosition(0.40);
             } else {
@@ -187,11 +196,19 @@ public class TeleOp2020_3 extends LinearOpMode{
                     if (gamepad1.right_trigger > 0.1) {
                         succLeftS.setPosition(0.25);
                         succRghtS.setPosition(0.75);
+                    }else {
+                        /*if (stoned && hsvValues[0]<90) {
+                            succLeftM.setPower(0);
+                            succRghtM.setPower(0);
+                            succLeftS.setPosition(1);
+                            succRghtS.setPosition(0);
+                            stoned = false;
+                        }*/
                     }
                 }
             }
 
-            //kv can move the waffle servoes
+            //kv can move the waffle swervos
             if (gamepad1.dpad_up) {
                 waffleForeS.setPosition(0.00);
                 waffleBackS.setPosition(1.00);
@@ -231,17 +248,17 @@ public class TeleOp2020_3 extends LinearOpMode{
             if (gamepad2.a) stoneS.setPosition(1.0);
             if (gamepad2.b) stoneS.setPosition(0.24);
             
-            /*if (gamepad2.right_trigger>0.1) {
-                slideS.setPosition(0.0);
+            if (gamepad2.right_trigger>0.1) {
+                slideS.setPosition(0.1);
             }else {
                 if (gamepad2.left_trigger>0.1) {
-                    slideS.setPosition(1.0);
-                }else {
-                    slideS.setPosition(0.5);
+                    slideS.setPosition(0.95);
                 }
-            }*/
+            }
+            //slideS.setPosition((gamepad2.left_stick_x+1)*0.5);
 
-            slideS.setPosition((gamepad2.left_stick_x+1)*0.5);
+            if (gamepad2.x) liftStone();
+            if (gamepad2.y) dropStone();
 
             /**all this crap below is staging and automatic stuff for the vertical claw*/
             //go down all the way
@@ -250,8 +267,8 @@ public class TeleOp2020_3 extends LinearOpMode{
                     verticalLeftM.setTargetPosition(0);
                     verticalRghtM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     verticalLeftM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    verticalLeftM.setPower(-0.75);
-                    verticalRghtM.setPower(-0.75);
+                    verticalLeftM.setPower(-1.00);
+                    verticalRghtM.setPower(-1.00);
                     
                     while (verticalRghtM.isBusy() && !stopDown) {
                         if (gamepad2.right_stick_button) {
@@ -316,9 +333,10 @@ public class TeleOp2020_3 extends LinearOpMode{
                 verticalRghtM.setPower(-0.75);
 
                 while (verticalRghtM.isBusy() && !stopDown) {
+                    if (gamepad2.right_stick_button) {
+                        stopDown = true;
+                    }
                 }
-                verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                verticalRghtM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 stopDown = false;
                 isStagingDown = false;
                 verticalLeftM.setPower(0);
@@ -338,8 +356,6 @@ public class TeleOp2020_3 extends LinearOpMode{
                         stopDown = true;
                     }
                 }
-                verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                verticalRghtM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 stopDown = false;
                 isStagingUp = false;
                 verticalLeftM.setPower(0);
@@ -347,12 +363,31 @@ public class TeleOp2020_3 extends LinearOpMode{
                 verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 verticalRghtM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
-            
-            /*if (gamepad2.right_trigger>0.1) skystoneRghtS.setPosition(0.5);
-              if (gamepad2.right_bumper)      skystoneGrabRghtS.setPosition(1.0);
-              if (gamepad2.a)                 skystoneRghtS.setPosition(1.0);
-              if (gamepad2.b)                 skystoneGrabRghtS.setPosition(0.45);*/
         }
     }
+    private void liftStone() throws InterruptedException {
+        skystoneRghtS.setPosition(0.3);
+        Thread.sleep(200);
+        skystoneGrabRghtS.setPosition(0.3);
+        skystoneRghtS.setPosition(0.0);
+        Thread.sleep(200);
+        skystoneGrabRghtS.setPosition(1.0);
+        Thread.sleep(600);
+        skystoneRghtS.setPosition(0.2);
+        skystoneRghtS.setPosition(0.4);
+        skystoneRghtS.setPosition(0.6);
+        skystoneRghtS.setPosition(0.8);
+        skystoneRghtS.setPosition(1.0);
+        Thread.sleep(300);
+    }
+    private void dropStone() throws InterruptedException {
+        skystoneGrabRghtS.setPosition(1.0);
+        Thread.sleep(100);
+        skystoneRghtS.setPosition(0.6);
+        Thread.sleep(400);
+        skystoneGrabRghtS.setPosition(0.3);
+        Thread.sleep(100);
+        skystoneRghtS.setPosition(1.0);
+        skystoneGrabRghtS.setPosition(0.0);
+    }
 }
-//yeet

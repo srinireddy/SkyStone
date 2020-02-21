@@ -183,7 +183,6 @@ public class TeleOp2020_1 extends LinearOpMode{
                     if (gamepad1.right_trigger > 0.1) {
                         succLeftS.setPosition(0.25);
                         succRghtS.setPosition(0.75);
-
                     } else {
                         if (stoneDS.getDistance(DistanceUnit.CM) < 13 && stoned) {
                             stoneLeftM.setPower(0);

@@ -46,12 +46,13 @@ public class AutoRedBoth0 extends LinearOpMode {
     private Servo waffleRghtS;
     private Servo succLeftS;
     private Servo succRghtS;
+    private Servo stoneS;
+    private Servo slideS;
 
     //declare sensors of distance
     private DistanceSensor frontDS;
     private DistanceSensor leftDS;
     private DistanceSensor backDS;
-    private DistanceSensor rightCS;
 
     //declare color sensor (CS) and related variables
     private ColorSensor stoneRghtCS;
@@ -61,9 +62,7 @@ public class AutoRedBoth0 extends LinearOpMode {
     int relativeLayoutId;
     View relativeLayout;
 
-    //declare sensor stuff
-    private boolean isSkystone = false;
-    private int tries = 0;
+    //declare skystone stuaagg stuff
     private int robotWhere;
 
     @Override
@@ -89,13 +88,14 @@ public class AutoRedBoth0 extends LinearOpMode {
             waffleRghtS       = hardwareMap.servo.get("waffleBackS");
             succLeftS         = hardwareMap.servo.get("succLeftS");
             succRghtS         = hardwareMap.servo.get("succRightS");
+            stoneS            = hardwareMap.servo.get("stoneS");
+            slideS            = hardwareMap.servo.get("slideS");
 
             //initialize sensor of distance
             frontDS = hardwareMap.get(DistanceSensor.class, "frontDS");
             leftDS  = hardwareMap.get(DistanceSensor.class, "leftDS");
             backDS  = hardwareMap.get(DistanceSensor.class, "backDS");
-            rightCS = hardwareMap.get(DistanceSensor.class, "skystoneRightCS");
-            
+
             //initialize color sensor
             stoneRghtCS = hardwareMap.colorSensor.get("skystoneRightCS");
 
@@ -130,162 +130,179 @@ public class AutoRedBoth0 extends LinearOpMode {
         waffleup();
 
         skystoneGrabRghtS.setPosition(0.10);
-        moveRghtE(0.6, 1260);
+        moveRghtE(0.6, 1315);
         driveForeCS(0.3);
 
         if (robotWhere == 0) {
-            driveForwardE(0.6, 55);
+            driveForwardE(0.6, 70, false);
             liftStone();
-            moveLeftE(0.8, 400);
-            driveBackwardE(0.6, 2700);
+            moveLeftE(0.8, 300);
+            driveBackwardE(0.8, 2700, true);
             Thread.sleep(50);
-            moveRghtE(0.7, 200);
+            moveRghtE(0.5, 200);
             Thread.sleep(50);
-            leftDistance(0.2, 82);
+            leftDistance(0.3, 79);
             dropStone();
+            stoneS.setPosition(0.10);
 
-            moveLeftE(0.7, 500);
+            moveLeftE(0.7, 400);
             Thread.sleep(50);
-            driveForwardE(0.6, 3150);
-            driveForeDS(0.5, 75);
+            driveForwardE(0.8, 3150, true);
+            //driveForeDS(0.5, 68);
+            leftDistance(0.5, 70);
             Thread.sleep(200);
-            moveRghtE(0.8, 1000);
+            moveRghtE(0.8, 750);
             moveLeftE(0.8, 100);
-            succLeftS.setPosition(0.25);
-            succRghtS.setPosition(0.75);
+            driveBackwardE(0.8, 100, false);
+            succLeftS.setPosition(0.60);
+            succRghtS.setPosition(0.40);
+            stoneLeftM.setPower(0.5);
+            stoneRghtM.setPower(0.5);
             Thread.sleep(50);
-            driveForwardE(0.2, 600);
+            driveForwardE(0.25, 320, false);
+
+            moveLeftE(0.8, 1100);
             succLeftS.setPosition(0.9);
             succRghtS.setPosition(0.1);
             stoneLeftM.setPower(0);
             stoneRghtM.setPower(0);
-            moveLeftE(0.8, 1100);
+            driveBackwardE(0.8, 3300, true);
+            stoneS.setPosition(1);
             Thread.sleep(50);
-            driveBackwardE(0.6, 3600);
-            Thread.sleep(50);
-            leftDistance(0.3, 77);
 
             spinLeftE(0.8, 900);
-            driveBackwardE(0.4, 300);
+            slideS.setPosition(0.0);
+            driveForeDS(0.5, 75);
             waffledown();
             Thread.sleep(500);
             spinRghtE(0.9, 200);
-            driveForwardE(0.9, 400);
+            driveForwardE(0.9, 400, false);
             turnRmoveFE(0.12, 3100, 7);
-            driveBackwardE(0.8, 1000);
-            driveBackwardE(0.2, 300);
+            slideS.setPosition(0.5);
+            driveBackwardE(0.8, 800, false);
+            driveBackwardE(0.2, 200, false);
 
+            stoneS.setPosition(0.24);
             waffleup();
             Thread.sleep(500);
-            moveRghtE(0.7, 400);
-            driveForwardE(0.8, 700);
-            spinRghtE(0.9, 1800);
-            succLeftS.setPosition(0.25);
-            succRghtS.setPosition(0.75);
-            Thread.sleep(100);
-            driveBackwardE(0.5, 800);
+            leftDistance(0.7, 60);
+            succLeftS.setPosition(0.50);
+            succRghtS.setPosition(0.50);
+            driveForwardE(0.5, 1300, false);
         }
         if (robotWhere == 1) {
-            driveForwardE(0.5, 150);
+            driveForwardE(0.6, 150, false);
             liftStone();
-            moveLeftE(0.8, 400);
-            driveBackwardE(0.6, 3050);
+            moveLeftE(0.8, 300);
+            driveBackwardE(0.8, 3150, true);
             Thread.sleep(50);
-            moveRghtE(0.7, 200);
+            moveRghtE(0.5, 200);
             Thread.sleep(50);
-            leftDistance(0.2, 82);
+            leftDistance(0.3, 79);
             dropStone();
+            stoneS.setPosition(0.10);
 
-            moveLeftE(0.7, 500);
+            moveLeftE(0.7, 400);
             Thread.sleep(50);
-            driveForwardE(0.6, 3400);
+            driveForwardE(0.8, 3600, true);
+            //driveForeDS(0.5, 63);
+            leftDistance(0.5, 70);
             Thread.sleep(200);
-            moveRghtE(0.8, 1000);
-            moveRghtE(0.8, 100);
-            succLeftS.setPosition(0.25);
-            succRghtS.setPosition(0.75);
+            moveRghtE(0.8, 750);
+            moveLeftE(0.8, 100);
+            driveBackwardE(0.8, 100, false);
+            succLeftS.setPosition(0.60);
+            succRghtS.setPosition(0.40);
+            stoneLeftM.setPower(0.5);
+            stoneRghtM.setPower(0.5);
             Thread.sleep(50);
-            driveForwardE(0.2, 600);
+            driveForwardE(0.25, 320, false);
+
+            moveLeftE(0.8, 1100);
             succLeftS.setPosition(0.9);
             succRghtS.setPosition(0.1);
             stoneLeftM.setPower(0);
             stoneRghtM.setPower(0);
-            moveLeftE(0.8, 950);
+            driveBackwardE(0.8, 3800, true);
+            stoneS.setPosition(1);
             Thread.sleep(50);
-            driveBackwardE(0.6, 3800);
-            Thread.sleep(50);
-            leftDistance(0.3, 77);
 
             spinLeftE(0.8, 900);
-            driveBackwardE(0.4, 300);
+            slideS.setPosition(0.0);
+            driveForeDS(0.5, 75);
             waffledown();
             Thread.sleep(500);
             spinRghtE(0.9, 200);
-            driveForwardE(0.9, 400);
+            driveForwardE(0.9, 400, false);
             turnRmoveFE(0.12, 3100, 7);
-            driveBackwardE(0.8, 1000);
-            driveBackwardE(0.2, 300);
+            slideS.setPosition(0.5);
+            driveBackwardE(0.8, 800, false);
+            driveBackwardE(0.2, 200, false);
 
+            stoneS.setPosition(0.24);
             waffleup();
             Thread.sleep(500);
-            moveRghtE(0.7, 400);
-            driveForwardE(0.8, 700);
-            spinRghtE(0.9, 1800);
-            succLeftS.setPosition(0.25);
-            succRghtS.setPosition(0.75);
-            Thread.sleep(100);
-            driveBackwardE(0.5, 800);
+            leftDistance(0.7, 60);
+            succLeftS.setPosition(0.50);
+            succRghtS.setPosition(0.50);
+            driveForwardE(0.5, 1300, false);
         }
         if (robotWhere == 2) {
-            driveForwardE(0.6, 150);
+            driveForwardE(0.6, 150, false);
             liftStone();
-            moveLeftE(0.8, 400);
-            driveBackwardE(0.6, 3400);
+            moveLeftE(0.8, 300);
+            driveBackwardE(0.8, 3400, true);
             Thread.sleep(50);
-            moveRghtE(0.7, 200);
+            moveRghtE(0.5, 200);
             Thread.sleep(50);
-            leftDistance(0.2, 82);
+            leftDistance(0.3, 79);
             dropStone();
+            stoneS.setPosition(0.10);
 
-            moveLeftE(0.7, 500);
+            moveLeftE(0.7, 400);
             Thread.sleep(50);
-            driveForwardE(0.6, 3750);
+            driveForwardE(0.8, 3750, true);
+            //driveForeDS(0.5, 43);
+            leftDistance(0.5, 70);
             Thread.sleep(200);
-            moveRghtE(0.8, 1000);
+            moveRghtE(0.8, 750);
             moveLeftE(0.8, 100);
-            succLeftS.setPosition(0.25);
-            succRghtS.setPosition(0.75);
+            driveBackwardE(0.8, 100, false);
+            succLeftS.setPosition(0.60);
+            succRghtS.setPosition(0.40);
+            stoneLeftM.setPower(0.5);
+            stoneRghtM.setPower(0.5);
             Thread.sleep(50);
-            driveForwardE(0.2, 300);
+            driveForwardE(0.25, 320, false);
+
+            moveLeftE(0.8, 1100);
             succLeftS.setPosition(0.9);
             succRghtS.setPosition(0.1);
             stoneLeftM.setPower(0);
             stoneRghtM.setPower(0);
-            moveLeftE(0.8, 950);
+            driveBackwardE(0.8, 4050, true);
+            stoneS.setPosition(1);
             Thread.sleep(50);
-            driveBackwardE(0.6, 4150);
-            Thread.sleep(50);
-            leftDistance(0.3, 77);
 
             spinLeftE(0.8, 900);
-            driveBackwardE(0.4, 300);
+            slideS.setPosition(0.0);
+            driveForeDS(0.5, 75);
             waffledown();
             Thread.sleep(500);
             spinRghtE(0.9, 200);
-            driveForwardE(0.9, 400);
+            driveForwardE(0.9, 400, false);
             turnRmoveFE(0.12, 3100, 7);
-            driveBackwardE(0.8, 1000);
-            driveBackwardE(0.2, 300);
+            slideS.setPosition(0.5);
+            driveBackwardE(0.8, 800, false);
+            driveBackwardE(0.2, 200, false);
 
+            stoneS.setPosition(0.24);
             waffleup();
             Thread.sleep(500);
-            moveRghtE(0.7, 400);
-            driveForwardE(0.8, 700);
-            spinRghtE(0.9, 1800);
-            succLeftS.setPosition(0.25);
-            succRghtS.setPosition(0.75);
-            Thread.sleep(100);
-            driveBackwardE(0.5, 800);
+            leftDistance(0.7, 60);
+            succLeftS.setPosition(0.50);
+            succRghtS.setPosition(0.50);
+            driveForwardE(0.5, 1300, false);
         }
 
     }
@@ -325,7 +342,7 @@ public class AutoRedBoth0 extends LinearOpMode {
         waffleRghtS.setPosition(1.00);
     }
 
-    private void driveForwardE(double power, int ticks) throws InterruptedException{
+    private void driveForwardE(double power, int ticks, boolean rampDown) {
         //Reset Encoders
         driveFLM.setMode(STOP_AND_RESET_ENCODER);
         driveFRM.setMode(STOP_AND_RESET_ENCODER);
@@ -350,19 +367,22 @@ public class AutoRedBoth0 extends LinearOpMode {
         driveBLM.setPower(power);
         driveBRM.setPower(power);
 
-        //wait until target position
-        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy())
-        {
-            telemetry.addData("distance", frontDS.getDistance(CM));
-            telemetry.update();
+        if (rampDown) {
+            //wait until target position
+            while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) {
+                if (Math.abs(driveFLM.getCurrentPosition()-driveFLM.getTargetPosition())<350) {
+                    driveFLM.setPower(0.5);
+                    driveFRM.setPower(0.5);
+                    driveBLM.setPower(0.5);
+                    driveBRM.setPower(0.5);
+                }
+            }
+        }else {
+            //wait until target position
+            while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) { }
         }
 
         //stopMoving();
-        driveFLM.setZeroPowerBehavior(BRAKE);
-        driveFRM.setZeroPowerBehavior(BRAKE);
-        driveBLM.setZeroPowerBehavior(BRAKE);
-        driveBRM.setZeroPowerBehavior(BRAKE);
-
         driveFLM.setPower(0);
         driveFRM.setPower(0);
         driveBLM.setPower(0);
@@ -378,7 +398,7 @@ public class AutoRedBoth0 extends LinearOpMode {
         driveBLM.setMode(RUN_USING_ENCODER);
         driveBRM.setMode(RUN_USING_ENCODER);
     }
-    private void driveBackwardE(double power, int ticks) throws InterruptedException {
+    private void driveBackwardE(double power, int ticks, boolean rampDown) {
         //Reset Encoders
         driveFLM.setMode(STOP_AND_RESET_ENCODER);
         driveFRM.setMode(STOP_AND_RESET_ENCODER);
@@ -403,11 +423,19 @@ public class AutoRedBoth0 extends LinearOpMode {
         driveBLM.setPower(power);
         driveBRM.setPower(power);
 
-        //wait until target position
-        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy())
-        {
-            telemetry.addData("distance", frontDS.getDistance(CM));
-            telemetry.update();
+        if (rampDown) {
+            //wait until target position
+            while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) {
+                if (Math.abs(driveFLM.getCurrentPosition()-driveFLM.getTargetPosition())<350) {
+                    driveFLM.setPower(0.5);
+                    driveFRM.setPower(0.5);
+                    driveBLM.setPower(0.5);
+                    driveBRM.setPower(0.5);
+                }
+            }
+        }else {
+            //wait until target position
+            while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) { }
         }
 
         //stopMoving();
@@ -415,7 +443,6 @@ public class AutoRedBoth0 extends LinearOpMode {
         driveFRM.setPower(0);
         driveBLM.setPower(0);
         driveBRM.setPower(0);
-        Thread.sleep(50);
 
         driveFLM.setZeroPowerBehavior(BRAKE);
         driveFRM.setZeroPowerBehavior(BRAKE);
@@ -453,11 +480,7 @@ public class AutoRedBoth0 extends LinearOpMode {
         driveBRM.setPower(power);
 
         //wait until target position
-        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy())
-        {
-            telemetry.addData("distance2", rightCS.getDistance(CM));
-            telemetry.update();
-        }
+        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) {}
 
         //stopMoving();
         driveFLM.setPower(0);
@@ -501,11 +524,7 @@ public class AutoRedBoth0 extends LinearOpMode {
         driveBRM.setPower(power);
 
         //wait until target position
-        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy())
-        {
-            telemetry.addData("distance2", rightCS.getDistance(CM));
-            telemetry.update();
-        }
+        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) {}
 
         //stopMoving();
         driveFLM.setPower(0);
@@ -549,11 +568,7 @@ public class AutoRedBoth0 extends LinearOpMode {
         driveBRM.setPower(power);
 
         //wait until target position
-        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy())
-        {
-            telemetry.addData("distance2", rightCS.getDistance(CM));
-            telemetry.update();
-        }
+        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) {}
 
         //stopMoving();
         driveFLM.setPower(0);
@@ -597,11 +612,7 @@ public class AutoRedBoth0 extends LinearOpMode {
         driveBRM.setPower(power);
 
         //wait until target position
-        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy())
-        {
-            telemetry.addData("distance2", rightCS.getDistance(CM));
-            telemetry.update();
-        }
+        while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy()) {}
 
         //stopMoving();
         driveFLM.setPower(0);
@@ -805,53 +816,5 @@ public class AutoRedBoth0 extends LinearOpMode {
         driveFRM.setMode(RUN_USING_ENCODER);
         driveBLM.setMode(RUN_USING_ENCODER);
         driveBRM.setMode(RUN_USING_ENCODER);
-    }
-    private void getSkystone() throws InterruptedException {
-
-        //changes to HSV instead of RGB cuz it's more useful
-        Color.RGBToHSV(
-                (int) (stoneRghtCS.red() * SCALE_FACTOR),
-                (int) (stoneRghtCS.green() * SCALE_FACTOR),
-                (int) (stoneRghtCS.blue() * SCALE_FACTOR),
-                hsvValues);
-
-        //telemetry
-        telemetry.addData("Hoo", hsvValues[0]);
-        telemetry.addData("Satchurashun", hsvValues[1]);
-        telemetry.addData("Valyoo", hsvValues[2]);
-        telemetry.update();
-
-        //changes color of the RC
-        relativeLayout.post(new Runnable() {
-            public void run() {
-                relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, values));
-            }
-        });
-
-        //says we found the skystone.
-        if (hsvValues[0]>90) {isSkystone = true;}
-    }
-    private void checkStones() throws InterruptedException {
-        //basically the same structure as last year
-        while (!isSkystone&&tries<2) {
-            tries++;
-            robotWhere = 0;
-            getSkystone();
-            if (!isSkystone) {
-                driveForwardE(0.3, 350);
-                robotWhere = 1;
-                getSkystone();
-                if (!isSkystone) {
-                    driveForwardE(0.3, 350);
-                    Thread.sleep(50);
-                    robotWhere = 2;
-                    getSkystone();
-                    if (!isSkystone) {
-                        driveBackwardE(0.3, 700);
-                        robotWhere = 0;
-                    }
-                }
-            }
-        }
     }
 }
