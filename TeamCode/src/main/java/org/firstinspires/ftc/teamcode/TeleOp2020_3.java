@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.app.Activity;
 import android.graphics.Color;
+import android.view.View;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -39,9 +41,11 @@ public class TeleOp2020_3 extends LinearOpMode{
     private Servo flipperS;
 
     //sensor of color
-    private ColorSensor ColorSensorOfStone;
+    private ColorSensor stoneCS;
     private float[] hsvValues = {0F, 0F, 0F};
     final float[] values = hsvValues;
+    int relativeLayoutId;
+    View relativeLayout;
     
     //epic things keeping track of things
     private double driveSpeed = 0.6;
@@ -97,7 +101,7 @@ public class TeleOp2020_3 extends LinearOpMode{
             //flipperS          = hardwareMap.servo.get("flipperS");
             
             //color sensor initialize
-            //ColorSensorOfStone = hardwareMap.colorSensor.get("stoneCS");
+            stoneCS = hardwareMap.colorSensor.get("stoneCS");
 
             //set motor directions
             driveFLM.setDirection(DcMotor.Direction.FORWARD);
@@ -124,6 +128,11 @@ public class TeleOp2020_3 extends LinearOpMode{
             verticalRghtM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             verticalLeftM.setZeroPowerBehavior(BRAKE);
             verticalRghtM.setZeroPowerBehavior(BRAKE);
+
+            //change screen color
+            relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
+            relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
+
         }
 
         waitForStart();
@@ -143,11 +152,22 @@ public class TeleOp2020_3 extends LinearOpMode{
         waffleBackS.setPosition(1.00);
 
         while(opModeIsActive()) {
+            //converts color sensor from rgb to hsv
+            Color.RGBToHSV((stoneCS.red()*255), (stoneCS.green()*255), (stoneCS.blue()*255), hsvValues);
+
             telemetry.addData("encoder data right", verticalRghtM.getCurrentPosition());
             telemetry.addData("stage number uwu", stageNum);
+            telemetry.addData("Hoo", hsvValues[0]);
+            telemetry.addData("Satchurashun", hsvValues[1]);
+            telemetry.addData("Valyoo", hsvValues[2]);
+            telemetry.addData("stoned?", stoned);
             telemetry.update();
 
-            //Color.RGBToHSV((ColorSensorOfStone.red()*255), (ColorSensorOfStone.green()*255), (ColorSensorOfStone.blue()*255), hsvValues);
+            relativeLayout.post(new Runnable() {
+                public void run() {
+                    relativeLayout.setBackgroundColor(Color.HSVToColor(0xff, values));
+                }
+            });
 
             //KV can change how fast he drives.
             if (gamepad1.left_stick_button) {
@@ -199,13 +219,13 @@ public class TeleOp2020_3 extends LinearOpMode{
                         succLeftS.setPosition(0.25);
                         succRghtS.setPosition(0.75);
                     }else {
-                        /*if (stoned && hsvValues[0]<90) {
+                        if (false && stoned && hsvValues[0]<90) {
                             succLeftM.setPower(0);
                             succRghtM.setPower(0);
                             succLeftS.setPosition(1);
                             succRghtS.setPosition(0);
                             stoned = false;
-                        }*/
+                        }
                     }
                 }
             }
