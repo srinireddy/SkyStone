@@ -20,8 +20,6 @@ public class AutoBluWaffle2 extends LinearOpMode {
     private DcMotor driveFRM;
     private DcMotor driveBLM;
     private DcMotor driveBRM;
-    private DcMotor stoneLeftM;
-    private DcMotor stoneRghtM;
 
     //declare servos
     private Servo waffleLeftS;
@@ -33,7 +31,6 @@ public class AutoBluWaffle2 extends LinearOpMode {
     private DistanceSensor frontDS;
     private DistanceSensor leftDS;
     private DistanceSensor backDS;
-    private DistanceSensor rightCS;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -44,8 +41,6 @@ public class AutoBluWaffle2 extends LinearOpMode {
             driveFRM = hardwareMap.dcMotor.get("driveFRM");
             driveBLM = hardwareMap.dcMotor.get("driveBLM");
             driveBRM = hardwareMap.dcMotor.get("driveBRM");
-            stoneLeftM = hardwareMap.dcMotor.get("succLeftM");
-            stoneRghtM = hardwareMap.dcMotor.get("succRightM");
 
             //initialize servos
             waffleLeftS       = hardwareMap.servo.get("waffleFrontS");
@@ -55,17 +50,14 @@ public class AutoBluWaffle2 extends LinearOpMode {
 
             //initialize sensor of distance
             frontDS = hardwareMap.get(DistanceSensor.class, "frontDS");
-            leftDS  = hardwareMap.get(DistanceSensor.class, "leftBackDS");
+            leftDS  = hardwareMap.get(DistanceSensor.class, "leftDS");
             backDS  = hardwareMap.get(DistanceSensor.class, "backDS");
-            rightCS = hardwareMap.get(DistanceSensor.class, "skystoneRightCS");
 
             //set directions
             driveFLM.setDirection(DcMotor.Direction.FORWARD);
             driveFRM.setDirection(DcMotor.Direction.REVERSE);
             driveBLM.setDirection(DcMotor.Direction.FORWARD);
             driveBRM.setDirection(DcMotor.Direction.REVERSE);
-            stoneLeftM.setDirection(DcMotor.Direction.FORWARD);
-            stoneRghtM.setDirection(DcMotor.Direction.REVERSE);
 
             //set to encoders
             driveFLM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -103,8 +95,8 @@ public class AutoBluWaffle2 extends LinearOpMode {
         driveBackwardE(0.2, 300);
         waffleup();
         Thread.sleep(500);
-        moveRghtE(0.7, 500);
-        driveForwardE(0.5, 1700);
+        moveRghtE(0.4, 500);
+        driveForwardE(0.4, 1700);
         moveRghtE(0.3, 300);
 
     }
@@ -234,8 +226,7 @@ public class AutoBluWaffle2 extends LinearOpMode {
         //wait until target position
         while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy())
         {
-            telemetry.addData("distance2", rightCS.getDistance(CM));
-            telemetry.update();
+
         }
 
         //stopMoving();
@@ -282,8 +273,7 @@ public class AutoBluWaffle2 extends LinearOpMode {
         //wait until target position
         while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy())
         {
-            telemetry.addData("distance2", rightCS.getDistance(CM));
-            telemetry.update();
+
         }
 
         //stopMoving();
@@ -330,8 +320,7 @@ public class AutoBluWaffle2 extends LinearOpMode {
         //wait until target position
         while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy())
         {
-            telemetry.addData("distance2", rightCS.getDistance(CM));
-            telemetry.update();
+
         }
 
         //stopMoving();
@@ -378,8 +367,6 @@ public class AutoBluWaffle2 extends LinearOpMode {
         //wait until target position
         while (driveFLM.isBusy() && driveFRM.isBusy() && driveBLM.isBusy() && driveBRM.isBusy())
         {
-            telemetry.addData("distance2", rightCS.getDistance(CM));
-            telemetry.update();
         }
 
         //stopMoving();

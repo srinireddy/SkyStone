@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
-@TeleOp(name = "teleop       linear                slide", group = "Sample")
+@TeleOp(name = "teleop linear slide", group = "Sample")
 public class TeleOpLinearSlide extends LinearOpMode{
 
     //declare motors

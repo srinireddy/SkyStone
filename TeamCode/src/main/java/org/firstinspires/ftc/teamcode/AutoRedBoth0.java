@@ -38,6 +38,8 @@ public class AutoRedBoth0 extends LinearOpMode {
     private DcMotor driveBRM;
     private DcMotor stoneLeftM;
     private DcMotor stoneRghtM;
+    private DcMotor verticalLeftM;
+    private DcMotor verticalRghtM;
 
     //declare servos
     private Servo skystoneRghtS;
@@ -47,7 +49,8 @@ public class AutoRedBoth0 extends LinearOpMode {
     private Servo succLeftS;
     private Servo succRghtS;
     private Servo stoneS;
-    private Servo slideS;
+    private Servo armS;
+    private Servo clawS;
 
     //declare sensors of distance
     private DistanceSensor frontDS;
@@ -80,6 +83,8 @@ public class AutoRedBoth0 extends LinearOpMode {
             driveBRM = hardwareMap.dcMotor.get("driveBRM");
             stoneLeftM = hardwareMap.dcMotor.get("succLeftM");
             stoneRghtM = hardwareMap.dcMotor.get("succRightM");
+            verticalLeftM = hardwareMap.dcMotor.get("verticalLeftM");
+            verticalRghtM = hardwareMap.dcMotor.get("verticalRightM");
 
             //initialize servos
             skystoneRghtS     = hardwareMap.servo.get("skystoneRightS");
@@ -89,7 +94,8 @@ public class AutoRedBoth0 extends LinearOpMode {
             succLeftS         = hardwareMap.servo.get("succLeftS");
             succRghtS         = hardwareMap.servo.get("succRightS");
             stoneS            = hardwareMap.servo.get("stoneS");
-            slideS            = hardwareMap.servo.get("slideS");
+            armS              = hardwareMap.servo.get("slideS");
+            clawS             = hardwareMap.servo.get("clawS");
 
             //initialize sensor of distance
             frontDS = hardwareMap.get(DistanceSensor.class, "frontDS");
@@ -106,22 +112,35 @@ public class AutoRedBoth0 extends LinearOpMode {
             driveBRM.setDirection(REVERSE);
             stoneLeftM.setDirection(FORWARD);
             stoneRghtM.setDirection(REVERSE);
+            verticalLeftM.setDirection(REVERSE);
+            verticalRghtM.setDirection(FORWARD);
 
             //set to encoders
             driveFLM.setMode(RUN_USING_ENCODER);
             driveFRM.setMode(RUN_USING_ENCODER);
             driveBLM.setMode(RUN_USING_ENCODER);
             driveBRM.setMode(RUN_USING_ENCODER);
+            verticalLeftM.setMode(RUN_USING_ENCODER);
+            verticalRghtM.setMode(RUN_USING_ENCODER);
 
             //set drive motors to brake
             driveFLM.setZeroPowerBehavior(BRAKE);
             driveFRM.setZeroPowerBehavior(BRAKE);
             driveBLM.setZeroPowerBehavior(BRAKE);
             driveBRM.setZeroPowerBehavior(BRAKE);
+            verticalLeftM.setZeroPowerBehavior(BRAKE);
+            verticalRghtM.setZeroPowerBehavior(BRAKE);
 
             telemetry.addData("ready?","Yeet");
             telemetry.update();
         }
+
+        armS.setPosition(0.00);
+        clawS.setPosition(0.15);
+        succLeftS.setPosition(1.0);
+        succRghtS.setPosition(0.0);
+        stoneS.setPosition(0.24);
+        waffleup();
 
         waitForStart();
 
@@ -130,16 +149,15 @@ public class AutoRedBoth0 extends LinearOpMode {
         waffleup();
 
         skystoneGrabRghtS.setPosition(0.10);
-        moveRghtE(0.6, 1315);
+        moveRghtE(0.6, 1285);
         driveForeCS(0.3);
 
         if (robotWhere == 0) {
             driveForwardE(0.6, 70, false);
             liftStone();
-            moveLeftE(0.8, 300);
-            driveBackwardE(0.8, 2700, true);
+            moveLeftE(0.8, 350);
+            driveBackwardE(0.7, 2700, true);
             Thread.sleep(50);
-            moveRghtE(0.5, 200);
             Thread.sleep(50);
             leftDistance(0.3, 79);
             dropStone();
@@ -162,41 +180,34 @@ public class AutoRedBoth0 extends LinearOpMode {
             driveForwardE(0.25, 320, false);
 
             moveLeftE(0.8, 1100);
-            succLeftS.setPosition(0.9);
-            succRghtS.setPosition(0.1);
-            stoneLeftM.setPower(0);
-            stoneRghtM.setPower(0);
             driveBackwardE(0.8, 3300, true);
-            stoneS.setPosition(1);
             Thread.sleep(50);
 
             spinLeftE(0.8, 900);
-            slideS.setPosition(0.0);
             driveForeDS(0.5, 75);
             waffledown();
             Thread.sleep(500);
+            stoneLeftM.setPower(-0.7);
+            stoneRghtM.setPower(-0.7);
             spinRghtE(0.9, 200);
             driveForwardE(0.9, 400, false);
             turnRmoveFE(0.12, 3100, 7);
-            slideS.setPosition(0.5);
             driveBackwardE(0.8, 800, false);
             driveBackwardE(0.2, 200, false);
 
-            stoneS.setPosition(0.24);
             waffleup();
             Thread.sleep(500);
             leftDistance(0.7, 60);
-            succLeftS.setPosition(0.50);
-            succRghtS.setPosition(0.50);
+            stoneLeftM.setPower(-0.7);
+            stoneRghtM.setPower(-0.7);
             driveForwardE(0.5, 1300, false);
         }
         if (robotWhere == 1) {
             driveForwardE(0.6, 150, false);
             liftStone();
-            moveLeftE(0.8, 300);
+            moveLeftE(0.8, 350);
             driveBackwardE(0.8, 3150, true);
             Thread.sleep(50);
-            moveRghtE(0.5, 200);
             Thread.sleep(50);
             leftDistance(0.3, 79);
             dropStone();
@@ -219,41 +230,34 @@ public class AutoRedBoth0 extends LinearOpMode {
             driveForwardE(0.25, 320, false);
 
             moveLeftE(0.8, 1100);
-            succLeftS.setPosition(0.9);
-            succRghtS.setPosition(0.1);
-            stoneLeftM.setPower(0);
-            stoneRghtM.setPower(0);
             driveBackwardE(0.8, 3800, true);
-            stoneS.setPosition(1);
             Thread.sleep(50);
 
             spinLeftE(0.8, 900);
-            slideS.setPosition(0.0);
             driveForeDS(0.5, 75);
             waffledown();
             Thread.sleep(500);
+            stoneLeftM.setPower(-0.7);
+            stoneRghtM.setPower(-0.7);
             spinRghtE(0.9, 200);
             driveForwardE(0.9, 400, false);
             turnRmoveFE(0.12, 3100, 7);
-            slideS.setPosition(0.5);
             driveBackwardE(0.8, 800, false);
             driveBackwardE(0.2, 200, false);
 
-            stoneS.setPosition(0.24);
             waffleup();
             Thread.sleep(500);
             leftDistance(0.7, 60);
-            succLeftS.setPosition(0.50);
-            succRghtS.setPosition(0.50);
+            stoneLeftM.setPower(-0.7);
+            stoneRghtM.setPower(-0.7);
             driveForwardE(0.5, 1300, false);
         }
         if (robotWhere == 2) {
             driveForwardE(0.6, 150, false);
             liftStone();
-            moveLeftE(0.8, 300);
+            moveLeftE(0.8, 350);
             driveBackwardE(0.8, 3400, true);
             Thread.sleep(50);
-            moveRghtE(0.5, 200);
             Thread.sleep(50);
             leftDistance(0.3, 79);
             dropStone();
@@ -276,35 +280,26 @@ public class AutoRedBoth0 extends LinearOpMode {
             driveForwardE(0.25, 320, false);
 
             moveLeftE(0.8, 1100);
-            succLeftS.setPosition(0.9);
-            succRghtS.setPosition(0.1);
-            stoneLeftM.setPower(0);
-            stoneRghtM.setPower(0);
             driveBackwardE(0.8, 4050, true);
-            stoneS.setPosition(1);
             Thread.sleep(50);
 
             spinLeftE(0.8, 900);
-            slideS.setPosition(0.0);
             driveForeDS(0.5, 75);
             waffledown();
             Thread.sleep(500);
+            stoneLeftM.setPower(-0.7);
+            stoneRghtM.setPower(-0.7);
             spinRghtE(0.9, 200);
             driveForwardE(0.9, 400, false);
             turnRmoveFE(0.12, 3100, 7);
-            slideS.setPosition(0.5);
             driveBackwardE(0.8, 800, false);
             driveBackwardE(0.2, 200, false);
 
-            stoneS.setPosition(0.24);
             waffleup();
             Thread.sleep(500);
             leftDistance(0.7, 60);
-            succLeftS.setPosition(0.50);
-            succRghtS.setPosition(0.50);
             driveForwardE(0.5, 1300, false);
         }
-
     }
     //methods
     private void liftStone() throws InterruptedException {
@@ -340,6 +335,31 @@ public class AutoRedBoth0 extends LinearOpMode {
     private void waffleup() {
         waffleLeftS.setPosition(0.00);
         waffleRghtS.setPosition(1.00);
+    }
+
+    private void verticalSlideUp(double power, int ticks) {
+        verticalRghtM.setTargetPosition(ticks);
+        verticalRghtM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        verticalLeftM.setPower(power);
+        verticalRghtM.setPower(power);
+        while (verticalRghtM.isBusy()) {}
+        verticalLeftM.setPower(0);
+        verticalRghtM.setPower(0);
+        verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        verticalRghtM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    }
+    private void verticalSlideDown(double power, int ticks) {
+        verticalRghtM.setTargetPosition(ticks);
+        verticalRghtM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        verticalLeftM.setPower(-power);
+        verticalRghtM.setPower(-power);
+        while (verticalRghtM.isBusy()) {}
+        verticalLeftM.setPower(0);
+        verticalRghtM.setPower(0);
+        verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        verticalRghtM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     private void driveForwardE(double power, int ticks, boolean rampDown) {

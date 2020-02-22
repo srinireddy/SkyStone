@@ -2,16 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.View;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -25,8 +21,8 @@ import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.CM;
 
-@Autonomous(name = "AutoBluBoth0", group = "Sample")
-public class AutoBluBoth0 extends LinearOpMode {
+@Autonomous(name = "AutoRedStone3", group = "Sample")
+public class AutoRedStone3 extends LinearOpMode {
 
     //declare motors
     private DcMotor driveFLM;
@@ -39,8 +35,8 @@ public class AutoBluBoth0 extends LinearOpMode {
     private DcMotor verticalRghtM;
 
     //declare servos
-    private Servo skystoneLeftS;
-    private Servo skystoneGrabLeftS;
+    private Servo skystoneRghtS;
+    private Servo skystoneGrabRghtS;
     private Servo waffleLeftS;
     private Servo waffleRghtS;
     private Servo succLeftS;
@@ -51,18 +47,18 @@ public class AutoBluBoth0 extends LinearOpMode {
 
     //declare sensors of distance
     private DistanceSensor frontDS;
-    private DistanceSensor rghtDS;
+    private DistanceSensor leftDS;
     private DistanceSensor backDS;
 
     //declare color sensor (CS) and related variables
-    private ColorSensor stoneLeftCS;
-    private float[] hsvValues = {0F, 0F, 0F};
-    private final float[] values = hsvValues;
-    private final double SCALE_FACTOR = 255;
-    private int relativeLayoutId;
-    private View relativeLayout;
+    private ColorSensor stoneRghtCS;
+    float[] hsvValues = {0F, 0F, 0F};
+    final float[] values = hsvValues;
+    final double SCALE_FACTOR = 255;
+    int relativeLayoutId;
+    View relativeLayout;
 
-    //declare sensor stuff
+    //declare skystone stuaagg stuff
     private int robotWhere;
 
     @Override
@@ -72,20 +68,20 @@ public class AutoBluBoth0 extends LinearOpMode {
             //change screen color
             relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
             relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
-
+            
             //initialize motors
-            driveFLM      = hardwareMap.dcMotor.get("driveFLM");
-            driveFRM      = hardwareMap.dcMotor.get("driveFRM");
-            driveBLM      = hardwareMap.dcMotor.get("driveBLM");
-            driveBRM      = hardwareMap.dcMotor.get("driveBRM");
-            stoneLeftM    = hardwareMap.dcMotor.get("succLeftM");
-            stoneRghtM    = hardwareMap.dcMotor.get("succRightM");
+            driveFLM = hardwareMap.dcMotor.get("driveFLM");
+            driveFRM = hardwareMap.dcMotor.get("driveFRM");
+            driveBLM = hardwareMap.dcMotor.get("driveBLM");
+            driveBRM = hardwareMap.dcMotor.get("driveBRM");
+            stoneLeftM = hardwareMap.dcMotor.get("succLeftM");
+            stoneRghtM = hardwareMap.dcMotor.get("succRightM");
             verticalLeftM = hardwareMap.dcMotor.get("verticalLeftM");
             verticalRghtM = hardwareMap.dcMotor.get("verticalRightM");
 
             //initialize servos
-            skystoneLeftS     = hardwareMap.servo.get("skystoneLeftS");
-            skystoneGrabLeftS = hardwareMap.servo.get("skystoneGrabLeftS");
+            skystoneRghtS     = hardwareMap.servo.get("skystoneRightS");
+            skystoneGrabRghtS = hardwareMap.servo.get("skystoneGrabRightS");
             waffleLeftS       = hardwareMap.servo.get("waffleFrontS");
             waffleRghtS       = hardwareMap.servo.get("waffleBackS");
             succLeftS         = hardwareMap.servo.get("succLeftS");
@@ -96,11 +92,11 @@ public class AutoBluBoth0 extends LinearOpMode {
 
             //initialize sensor of distance
             frontDS = hardwareMap.get(DistanceSensor.class, "frontDS");
-            rghtDS  = hardwareMap.get(DistanceSensor.class, "rightDS");
+            leftDS  = hardwareMap.get(DistanceSensor.class, "leftDS");
             backDS  = hardwareMap.get(DistanceSensor.class, "backDS");
 
             //initialize color sensor
-            stoneLeftCS = hardwareMap.colorSensor.get("skystoneLeftCS");
+            stoneRghtCS = hardwareMap.colorSensor.get("skystoneRightCS");
 
             //set directions
             driveFLM.setDirection(FORWARD);
@@ -120,7 +116,7 @@ public class AutoBluBoth0 extends LinearOpMode {
             verticalLeftM.setMode(RUN_USING_ENCODER);
             verticalRghtM.setMode(RUN_USING_ENCODER);
 
-            //set drigve motors to brake
+            //set drive motors to brake
             driveFLM.setZeroPowerBehavior(BRAKE);
             driveFRM.setZeroPowerBehavior(BRAKE);
             driveBLM.setZeroPowerBehavior(BRAKE);
@@ -130,7 +126,6 @@ public class AutoBluBoth0 extends LinearOpMode {
 
             telemetry.addData("ready?","Yeet");
             telemetry.update();
-
         }
 
         armS.setPosition(0.00);
@@ -149,30 +144,29 @@ public class AutoBluBoth0 extends LinearOpMode {
         stoneS.setPosition(0.24);
         waffleup();
 
-        skystoneGrabLeftS.setPosition(0.90);
-        moveLeftE(0.6, 1325);
+        skystoneGrabRghtS.setPosition(0.10);
+        moveRghtE(0.6, 1315);
         driveForeCS(0.3);
 
         if (robotWhere == 0) {
             driveForwardE(0.6, 70, false);
             liftStone();
-            moveRghtE(0.8, 300);
-            driveBackwardE(0.8, 2700, true);
+            moveLeftE(0.8, 400);
+            driveBackwardE(0.7, 2000, true);
             Thread.sleep(50);
-            moveLeftE(0.5, 200);
+            moveRghtE(0.5, 300);
             Thread.sleep(50);
-            rghtDistance(0.3, 79);
             dropStone();
-            stoneS.setPosition(0.10);
+            stoneS.setPosition(0.24);
 
-            moveRghtE(0.7, 400);
+            moveLeftE(0.7, 400);
             Thread.sleep(50);
-            driveForwardE(0.8, 3150, true);
+            driveForwardE(0.8, 2450, true);
             //driveForeDS(0.5, 68);
-            rghtDistance(0.5, 70);
+            leftDistance(0.5, 70);
             Thread.sleep(200);
-            moveLeftE(0.8, 750);
-            moveRghtE(0.8, 100);
+            moveRghtE(0.8, 750);
+            moveLeftE(0.8, 100);
             driveBackwardE(0.8, 100, false);
             succLeftS.setPosition(0.60);
             succRghtS.setPosition(0.40);
@@ -181,100 +175,33 @@ public class AutoBluBoth0 extends LinearOpMode {
             Thread.sleep(50);
             driveForwardE(0.25, 320, false);
 
-            moveRghtE(0.8, 1100);
-            driveBackwardE(0.8, 3300, true);
-            Thread.sleep(50);
-
-            spinRghtE(0.8, 900);
-            driveForeDS(0.5, 75);
-            waffledown();
-            Thread.sleep(500);
+            moveLeftE(0.8, 1100);
+            spinRghtE(0.4, 1750);
+            driveForwardE(0.8, 2400, true);
             stoneLeftM.setPower(-0.7);
             stoneRghtM.setPower(-0.7);
-            spinLeftE(0.9, 200);
-            driveForwardE(0.9, 400, false);
-            turnLmoveFE(0.12, 3100, 7);
-            driveBackwardE(0.8, 800, false);
-            driveBackwardE(0.2, 200, false);
-
-            waffleup();
-            Thread.sleep(500);
-            rghtDistance(0.7, 60);
-            succLeftS.setPosition(0.50);
-            succRghtS.setPosition(0.50);
-            driveForwardE(0.5, 1300, false);
+            Thread.sleep(50);
+            driveBackwardE(0.6, 500, false);
         }
         if (robotWhere == 1) {
             driveForwardE(0.6, 150, false);
             liftStone();
-            moveRghtE(0.8, 300);
-            driveBackwardE(0.8, 3150, true);
+            moveLeftE(0.8, 400);
+            driveBackwardE(0.7, 2450, true);
             Thread.sleep(50);
-            moveLeftE(0.5, 200);
+            moveRghtE(0.5, 300);
             Thread.sleep(50);
-            rghtDistance(0.3, 79);
             dropStone();
-            stoneS.setPosition(0.10);
+            stoneS.setPosition(0.24);
 
-            moveRghtE(0.7, 400);
+            moveLeftE(0.7, 400);
             Thread.sleep(50);
-            driveForwardE(0.8, 3600, true);
-            //driveForeDS(0.5, 63);
-            rghtDistance(0.5, 70);
+            driveForwardE(0.8, 2900, true);
+            //driveForeDS(0.5, 68);
+            leftDistance(0.5, 70);
             Thread.sleep(200);
-            moveLeftE(0.8, 750);
-            moveRghtE(0.8, 100);
-            driveBackwardE(0.8, 100, false);
-            Thread.sleep(50);
-            driveForwardE(0.25, 320, false);
-
-            moveRghtE(0.8, 1100);
-            succLeftS.setPosition(0.9);
-            succRghtS.setPosition(0.1);
-            stoneLeftM.setPower(0);
-            stoneRghtM.setPower(0);
-            driveBackwardE(0.8, 3800, true);
-            Thread.sleep(50);
-
-            spinRghtE(0.8, 900);
-            driveForeDS(0.5, 75);
-            waffledown();
-            Thread.sleep(500);
-            stoneLeftM.setPower(-0.7);
-            stoneRghtM.setPower(-0.7);
-            spinLeftE(0.9, 200);
-            driveForwardE(0.9, 400, false);
-            turnLmoveFE(0.12, 3100, 7);
-            driveBackwardE(0.8, 800, false);
-            driveBackwardE(0.2, 200, false);
-
-            waffleup();
-            Thread.sleep(500);
-            rghtDistance(0.7, 60);
-            succLeftS.setPosition(0.50);
-            succRghtS.setPosition(0.50);
-            driveForwardE(0.5, 1300, false);
-        }
-        if (robotWhere == 2) {
-            driveForwardE(0.6, 150, false);
-            liftStone();
-            moveRghtE(0.8, 300);
-            driveBackwardE(0.8, 3400, true);
-            Thread.sleep(50);
-            moveLeftE(0.5, 200);
-            Thread.sleep(50);
-            rghtDistance(0.3, 79);
-            dropStone();
-            stoneS.setPosition(0.10);
-
-            moveRghtE(0.7, 400);
-            Thread.sleep(50);
-            driveForwardE(0.8, 3750, true);
-            //driveForeDS(0.5, 43);
-            rghtDistance(0.5, 70);
-            Thread.sleep(200);
-            moveLeftE(0.8, 750);
-            moveRghtE(0.8, 100);
+            moveRghtE(0.8, 750);
+            moveLeftE(0.8, 100);
             driveBackwardE(0.8, 100, false);
             succLeftS.setPosition(0.60);
             succRghtS.setPosition(0.40);
@@ -283,56 +210,76 @@ public class AutoBluBoth0 extends LinearOpMode {
             Thread.sleep(50);
             driveForwardE(0.25, 320, false);
 
-            moveRghtE(0.8, 1100);
-            driveBackwardE(0.8, 4050, true);
-            Thread.sleep(50);
-
-            spinRghtE(0.8, 900);
-            driveForeDS(0.5, 75);
-            waffledown();
-            Thread.sleep(500);
+            moveLeftE(0.8, 1100);
+            spinRghtE(0.4, 1750);
+            driveForwardE(0.8, 2750, true);
             stoneLeftM.setPower(-0.7);
             stoneRghtM.setPower(-0.7);
-            spinLeftE(0.9, 200);
-            driveForwardE(0.9, 400, false);
-            turnLmoveFE(0.12, 3100, 7);
-            driveBackwardE(0.8, 800, false);
-            driveBackwardE(0.2, 200, false);
+            Thread.sleep(50);
+            driveBackwardE(0.6, 500, false);
+        }
+        if (robotWhere == 2) {
+            driveForwardE(0.6, 150, false);
+            liftStone();
+            moveLeftE(0.8, 400);
+            driveBackwardE(0.7, 2700, true);
+            Thread.sleep(50);
+            moveRghtE(0.5, 300);
+            Thread.sleep(50);
+            dropStone();
+            stoneS.setPosition(0.24);
 
-            waffleup();
-            Thread.sleep(500);
-            rghtDistance(0.7, 60);
-            succLeftS.setPosition(0.50);
-            succRghtS.setPosition(0.50);
-            driveForwardE(0.5, 1300, false);
+            moveLeftE(0.7, 400);
+            Thread.sleep(50);
+            driveForwardE(0.8, 3050, true);
+            //driveForeDS(0.5, 68);
+            leftDistance(0.5, 70);
+            Thread.sleep(200);
+            moveRghtE(0.8, 750);
+            moveLeftE(0.8, 100);
+            driveBackwardE(0.8, 100, false);
+            succLeftS.setPosition(0.60);
+            succRghtS.setPosition(0.40);
+            stoneLeftM.setPower(0.5);
+            stoneRghtM.setPower(0.5);
+            Thread.sleep(50);
+            driveForwardE(0.25, 320, false);
+
+            moveLeftE(0.8, 1100);
+            spinRghtE(0.4, 1750);
+            driveForwardE(0.8, 2900, true);
+            stoneLeftM.setPower(-0.7);
+            stoneRghtM.setPower(-0.7);
+            Thread.sleep(50);
+            driveBackwardE(0.6, 500, false);
         }
 
     }
     //methods
     private void liftStone() throws InterruptedException {
-        skystoneLeftS.setPosition(0.7);
+        skystoneRghtS.setPosition(0.3);
         Thread.sleep(200);
-        skystoneGrabLeftS.setPosition(0.7);
-        skystoneLeftS.setPosition(1.0);
+        skystoneGrabRghtS.setPosition(0.3);
+        skystoneRghtS.setPosition(0.0);
         Thread.sleep(200);
-        skystoneGrabLeftS.setPosition(0.0);
+        skystoneGrabRghtS.setPosition(1.0);
         Thread.sleep(600);
-        skystoneLeftS.setPosition(0.8);
-        skystoneLeftS.setPosition(0.6);
-        skystoneLeftS.setPosition(0.4);
-        skystoneLeftS.setPosition(0.2);
-        skystoneLeftS.setPosition(0.0);
+        skystoneRghtS.setPosition(0.2);
+        skystoneRghtS.setPosition(0.4);
+        skystoneRghtS.setPosition(0.6);
+        skystoneRghtS.setPosition(0.8);
+        skystoneRghtS.setPosition(1.0);
         Thread.sleep(300);
     }
     private void dropStone() throws InterruptedException {
-        skystoneGrabLeftS.setPosition(0.0);
+        skystoneGrabRghtS.setPosition(1.0);
         Thread.sleep(100);
-        skystoneLeftS.setPosition(0.4);
+        skystoneRghtS.setPosition(0.6);
         Thread.sleep(400);
-        skystoneGrabLeftS.setPosition(0.7);
+        skystoneGrabRghtS.setPosition(0.3);
         Thread.sleep(100);
-        skystoneLeftS.setPosition(0.0);
-        skystoneGrabLeftS.setPosition(1.0);
+        skystoneRghtS.setPosition(1.0);
+        skystoneGrabRghtS.setPosition(0.0);
     }
 
     private void waffledown() {
@@ -658,7 +605,7 @@ public class AutoBluBoth0 extends LinearOpMode {
         driveBRM.setMode(RUN_USING_ENCODER);
     }
 
-    private void turnLmoveFE(double power, int ticks, double multiplier) {
+    private void turnRmoveFE(double power, int ticks, double multiplier) {
         //Reset Encoders
         driveFLM.setMode(STOP_AND_RESET_ENCODER);
         driveFRM.setMode(STOP_AND_RESET_ENCODER);
@@ -678,13 +625,13 @@ public class AutoBluBoth0 extends LinearOpMode {
         driveBRM.setMode(RUN_TO_POSITION);
 
         //driveForward
-        driveFLM.setPower(power);
-        driveFRM.setPower(power*multiplier);
-        driveBLM.setPower(power);
-        driveBRM.setPower(power*multiplier);
+        driveFLM.setPower(power*multiplier);
+        driveFRM.setPower(power);
+        driveBLM.setPower(power*multiplier);
+        driveBRM.setPower(power);
 
         //wait until target position
-        while (driveFRM.isBusy() && driveBRM.isBusy())
+        while (driveFLM.isBusy() && driveBLM.isBusy())
         {
 
         }
@@ -705,18 +652,18 @@ public class AutoBluBoth0 extends LinearOpMode {
         driveBLM.setMode(RUN_USING_ENCODER);
         driveBRM.setMode(RUN_USING_ENCODER);
     }
-
-    private void rghtDistance(double power, double distance) {
-        telemetry.addData("distance", rghtDS.getDistance(CM));
+    
+    private void leftDistance(double power, double distance) {
+        telemetry.addData("distance", leftDS.getDistance(CM));
         telemetry.update();
-        if (rghtDS.getDistance(CM) >= distance) {
-            driveFLM.setPower(power);
-            driveFRM.setPower(-power);
-            driveBLM.setPower(-power);
-            driveBRM.setPower(power);
+        if (leftDS.getDistance(CM) >= distance) {
+            driveFLM.setPower(-power);
+            driveFRM.setPower(power);
+            driveBLM.setPower(power);
+            driveBRM.setPower(-power);
 
-            while (rghtDS.getDistance(CM) > distance) {
-                telemetry.addData("distance", rghtDS.getDistance(CM));
+            while (leftDS.getDistance(CM) > distance) {
+                telemetry.addData("distance", leftDS.getDistance(CM));
                 telemetry.update();
             }
 
@@ -725,13 +672,13 @@ public class AutoBluBoth0 extends LinearOpMode {
             driveBLM.setPower(0);
             driveBRM.setPower(0);
         }else {
-            driveFLM.setPower(-power);
-            driveFRM.setPower(power);
-            driveBLM.setPower(power);
-            driveBRM.setPower(-power);
+            driveFLM.setPower(power);
+            driveFRM.setPower(-power);
+            driveBLM.setPower(-power);
+            driveBRM.setPower(power);
 
-            while (rghtDS.getDistance(CM) < distance) {
-                telemetry.addData("distance", rghtDS.getDistance(CM));
+            while (leftDS.getDistance(CM) < distance) {
+                telemetry.addData("distance", leftDS.getDistance(CM));
                 telemetry.update();
             }
 
@@ -776,7 +723,7 @@ public class AutoBluBoth0 extends LinearOpMode {
             driveBRM.setPower(0);
         }
     }
-    
+
     private void driveForeCS(double power) {
         driveFLM.setMode(STOP_AND_RESET_ENCODER);
         driveFRM.setMode(STOP_AND_RESET_ENCODER);
@@ -788,10 +735,15 @@ public class AutoBluBoth0 extends LinearOpMode {
         driveBLM.setMode(RUN_USING_ENCODER);
         driveBRM.setMode(RUN_USING_ENCODER);
 
+        driveFLM.setPower(power);
+        driveFRM.setPower(power);
+        driveBLM.setPower(power);
+        driveBRM.setPower(power);
+
         Color.RGBToHSV(
-                (int) (stoneLeftCS.red() * SCALE_FACTOR),
-                (int) (stoneLeftCS.green() * SCALE_FACTOR),
-                (int) (stoneLeftCS.blue() * SCALE_FACTOR),
+                (int) (stoneRghtCS.red() * SCALE_FACTOR),
+                (int) (stoneRghtCS.green() * SCALE_FACTOR),
+                (int) (stoneRghtCS.blue() * SCALE_FACTOR),
                 hsvValues);
 
         //telemetry
@@ -800,20 +752,11 @@ public class AutoBluBoth0 extends LinearOpMode {
         telemetry.addData("Valyoo", hsvValues[2]);
         telemetry.update();
 
-        if (hsvValues[0]>90) {
-            robotWhere = 0;
-            return;
-        }
-        driveFLM.setPower(power);
-        driveFRM.setPower(power);
-        driveBLM.setPower(power);
-        driveBRM.setPower(power);
-
         while (hsvValues[0]<90) {
             Color.RGBToHSV(
-                    (int) (stoneLeftCS.red() * SCALE_FACTOR),
-                    (int) (stoneLeftCS.green() * SCALE_FACTOR),
-                    (int) (stoneLeftCS.blue() * SCALE_FACTOR),
+                    (int) (stoneRghtCS.red() * SCALE_FACTOR),
+                    (int) (stoneRghtCS.green() * SCALE_FACTOR),
+                    (int) (stoneRghtCS.blue() * SCALE_FACTOR),
                     hsvValues);
 
             //telemetry

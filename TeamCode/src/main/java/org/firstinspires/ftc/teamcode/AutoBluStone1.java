@@ -2,16 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.View;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -25,8 +21,8 @@ import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.CM;
 
-@Autonomous(name = "AutoBluBoth0", group = "Sample")
-public class AutoBluBoth0 extends LinearOpMode {
+@Autonomous(name = "AutoBluStone1", group = "Sample")
+public class AutoBluStone1 extends LinearOpMode {
 
     //declare motors
     private DcMotor driveFLM;
@@ -138,15 +134,11 @@ public class AutoBluBoth0 extends LinearOpMode {
         succLeftS.setPosition(1.0);
         succRghtS.setPosition(0.0);
         stoneS.setPosition(0.24);
-        waffleup();
 
         waitForStart();
 
-        armS.setPosition(0.00);
-        clawS.setPosition(0.15);
-        succLeftS.setPosition(1.0);
-        succRghtS.setPosition(0.0);
-        stoneS.setPosition(0.24);
+        succLeftS.setPosition(1);
+        succRghtS.setPosition(0);
         waffleup();
 
         skystoneGrabLeftS.setPosition(0.90);
@@ -156,18 +148,52 @@ public class AutoBluBoth0 extends LinearOpMode {
         if (robotWhere == 0) {
             driveForwardE(0.6, 70, false);
             liftStone();
-            moveRghtE(0.8, 300);
-            driveBackwardE(0.8, 2700, true);
+            moveRghtE(0.8, 400);
+            driveBackwardE(0.7, 2000, true);
             Thread.sleep(50);
-            moveLeftE(0.5, 200);
+            moveLeftE(0.5, 300);
             Thread.sleep(50);
-            rghtDistance(0.3, 79);
             dropStone();
-            stoneS.setPosition(0.10);
+            stoneS.setPosition(0.24);
 
             moveRghtE(0.7, 400);
             Thread.sleep(50);
-            driveForwardE(0.8, 3150, true);
+            driveForwardE(0.8, 2450, true);
+            //driveForeDS(0.5, 68);
+            rghtDistance(0.5, 70);
+            Thread.sleep(200);
+            moveLeftE(0.8, 750);
+            moveRghtE(0.8, 100);
+            driveBackwardE(0.8, 100, false);
+            succLeftS.setPosition(0.60);
+            succRghtS.setPosition(0.40);
+            stoneLeftM.setPower(0.5);
+            stoneRghtM.setPower(0.5);
+            Thread.sleep(50);
+            driveForwardE(0.25, 320, false);
+
+            moveRghtE(0.8, 900);
+            spinLeftE(0.4, 1800);
+            driveForwardE(0.5, 2400, true);
+            stoneLeftM.setPower(-0.7);
+            stoneRghtM.setPower(-0.7);
+            Thread.sleep(50);
+            driveBackwardE(0.6, 500, false);
+        }
+        if (robotWhere == 1) {
+            driveForwardE(0.6, 150, false);
+            liftStone();
+            moveRghtE(0.8, 400);
+            driveBackwardE(0.7, 2450, true);
+            Thread.sleep(50);
+            moveLeftE(0.5, 300);
+            Thread.sleep(50);
+            dropStone();
+            stoneS.setPosition(0.24);
+
+            moveRghtE(0.7, 400);
+            Thread.sleep(50);
+            driveForwardE(0.8, 2900, true);
             //driveForeDS(0.5, 68);
             rghtDistance(0.5, 70);
             Thread.sleep(200);
@@ -182,95 +208,30 @@ public class AutoBluBoth0 extends LinearOpMode {
             driveForwardE(0.25, 320, false);
 
             moveRghtE(0.8, 1100);
-            driveBackwardE(0.8, 3300, true);
-            Thread.sleep(50);
-
-            spinRghtE(0.8, 900);
-            driveForeDS(0.5, 75);
-            waffledown();
-            Thread.sleep(500);
+            spinLeftE(0.4, 1800);
+            driveForwardE(0.8, 2750, true);
+            stoneLeftM.setPower(0.4);
+            stoneRghtM.setPower(0.6);
             stoneLeftM.setPower(-0.7);
             stoneRghtM.setPower(-0.7);
-            spinLeftE(0.9, 200);
-            driveForwardE(0.9, 400, false);
-            turnLmoveFE(0.12, 3100, 7);
-            driveBackwardE(0.8, 800, false);
-            driveBackwardE(0.2, 200, false);
-
-            waffleup();
-            Thread.sleep(500);
-            rghtDistance(0.7, 60);
-            succLeftS.setPosition(0.50);
-            succRghtS.setPosition(0.50);
-            driveForwardE(0.5, 1300, false);
-        }
-        if (robotWhere == 1) {
-            driveForwardE(0.6, 150, false);
-            liftStone();
-            moveRghtE(0.8, 300);
-            driveBackwardE(0.8, 3150, true);
             Thread.sleep(50);
-            moveLeftE(0.5, 200);
-            Thread.sleep(50);
-            rghtDistance(0.3, 79);
-            dropStone();
-            stoneS.setPosition(0.10);
-
-            moveRghtE(0.7, 400);
-            Thread.sleep(50);
-            driveForwardE(0.8, 3600, true);
-            //driveForeDS(0.5, 63);
-            rghtDistance(0.5, 70);
-            Thread.sleep(200);
-            moveLeftE(0.8, 750);
-            moveRghtE(0.8, 100);
-            driveBackwardE(0.8, 100, false);
-            Thread.sleep(50);
-            driveForwardE(0.25, 320, false);
-
-            moveRghtE(0.8, 1100);
-            succLeftS.setPosition(0.9);
-            succRghtS.setPosition(0.1);
-            stoneLeftM.setPower(0);
-            stoneRghtM.setPower(0);
-            driveBackwardE(0.8, 3800, true);
-            Thread.sleep(50);
-
-            spinRghtE(0.8, 900);
-            driveForeDS(0.5, 75);
-            waffledown();
-            Thread.sleep(500);
-            stoneLeftM.setPower(-0.7);
-            stoneRghtM.setPower(-0.7);
-            spinLeftE(0.9, 200);
-            driveForwardE(0.9, 400, false);
-            turnLmoveFE(0.12, 3100, 7);
-            driveBackwardE(0.8, 800, false);
-            driveBackwardE(0.2, 200, false);
-
-            waffleup();
-            Thread.sleep(500);
-            rghtDistance(0.7, 60);
-            succLeftS.setPosition(0.50);
-            succRghtS.setPosition(0.50);
-            driveForwardE(0.5, 1300, false);
+            driveBackwardE(0.6, 500, false);
         }
         if (robotWhere == 2) {
             driveForwardE(0.6, 150, false);
             liftStone();
-            moveRghtE(0.8, 300);
-            driveBackwardE(0.8, 3400, true);
+            moveRghtE(0.8, 400);
+            driveBackwardE(0.7, 2700, true);
             Thread.sleep(50);
-            moveLeftE(0.5, 200);
+            moveLeftE(0.5, 300);
             Thread.sleep(50);
-            rghtDistance(0.3, 79);
             dropStone();
-            stoneS.setPosition(0.10);
+            stoneS.setPosition(0.24);
 
             moveRghtE(0.7, 400);
             Thread.sleep(50);
-            driveForwardE(0.8, 3750, true);
-            //driveForeDS(0.5, 43);
+            driveForwardE(0.8, 3050, true);
+            //driveForeDS(0.5, 68);
             rghtDistance(0.5, 70);
             Thread.sleep(200);
             moveLeftE(0.8, 750);
@@ -284,27 +245,14 @@ public class AutoBluBoth0 extends LinearOpMode {
             driveForwardE(0.25, 320, false);
 
             moveRghtE(0.8, 1100);
-            driveBackwardE(0.8, 4050, true);
-            Thread.sleep(50);
-
-            spinRghtE(0.8, 900);
-            driveForeDS(0.5, 75);
-            waffledown();
-            Thread.sleep(500);
+            spinLeftE(0.4, 1800);
+            driveForwardE(0.8, 3100, true);
+            stoneLeftM.setPower(0.4);
+            stoneRghtM.setPower(0.6);
             stoneLeftM.setPower(-0.7);
             stoneRghtM.setPower(-0.7);
-            spinLeftE(0.9, 200);
-            driveForwardE(0.9, 400, false);
-            turnLmoveFE(0.12, 3100, 7);
-            driveBackwardE(0.8, 800, false);
-            driveBackwardE(0.2, 200, false);
-
-            waffleup();
-            Thread.sleep(500);
-            rghtDistance(0.7, 60);
-            succLeftS.setPosition(0.50);
-            succRghtS.setPosition(0.50);
-            driveForwardE(0.5, 1300, false);
+            Thread.sleep(50);
+            driveBackwardE(0.6, 500, false);
         }
 
     }

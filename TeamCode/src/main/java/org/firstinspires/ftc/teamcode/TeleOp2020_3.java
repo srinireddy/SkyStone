@@ -9,9 +9,17 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_TO_POSITION;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_USING_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.RUN_WITHOUT_ENCODER;
+import static com.qualcomm.robotcore.hardware.DcMotor.RunMode.STOP_AND_RESET_ENCODER;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.FORWARD;
+import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
+import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.CM;
 
 @TeleOp(name = "TeleOp2020_3", group = "Sample")
 public class TeleOp2020_3 extends LinearOpMode{
@@ -40,7 +48,8 @@ public class TeleOp2020_3 extends LinearOpMode{
     private Servo waffleBackS;
     private Servo flipperS;
 
-    //sensor of color
+    //sensor of color and distance
+    private DistanceSensor stoneDS;
     private ColorSensor stoneCS;
     private float[] hsvValues = {0F, 0F, 0F};
     final float[] values = hsvValues;
@@ -49,6 +58,7 @@ public class TeleOp2020_3 extends LinearOpMode{
     
     //epic things keeping track of things
     private double driveSpeed = 0.6;
+    private double slideSpeed = 1.0;
     private boolean flipperUp = false;
     private boolean stoned = false;
     
@@ -101,31 +111,32 @@ public class TeleOp2020_3 extends LinearOpMode{
             //flipperS          = hardwareMap.servo.get("flipperS");
             
             //color sensor initialize
-            stoneCS = hardwareMap.colorSensor.get("stoneCS");
+            stoneCS = hardwareMap.get(ColorSensor.class, "stoneCS");
+            stoneDS = hardwareMap.get(DistanceSensor.class, "stoneCS");
 
             //set motor directions
-            driveFLM.setDirection(DcMotor.Direction.FORWARD);
-            driveFRM.setDirection(DcMotor.Direction.REVERSE);
-            driveBLM.setDirection(DcMotor.Direction.FORWARD);
-            driveBRM.setDirection(DcMotor.Direction.REVERSE);
-            succLeftM.setDirection(DcMotor.Direction.FORWARD);
-            succRghtM.setDirection(DcMotor.Direction.REVERSE);
-            verticalLeftM.setDirection(DcMotorSimple.Direction.REVERSE);
-            verticalRghtM.setDirection(DcMotorSimple.Direction.FORWARD);
+            driveFLM.setDirection(FORWARD);
+            driveFRM.setDirection(REVERSE);
+            driveBLM.setDirection(FORWARD);
+            driveBRM.setDirection(REVERSE);
+            succLeftM.setDirection(FORWARD);
+            succRghtM.setDirection(REVERSE);
+            verticalLeftM.setDirection(REVERSE);
+            verticalRghtM.setDirection(FORWARD);
 
             //set most motors to not use encoders
-            driveFLM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            driveFRM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            driveBLM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            driveBRM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            succLeftM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            succRghtM.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            driveFLM.setMode(RUN_WITHOUT_ENCODER);
+            driveFRM.setMode(RUN_WITHOUT_ENCODER);
+            driveBLM.setMode(RUN_WITHOUT_ENCODER);
+            driveBRM.setMode(RUN_WITHOUT_ENCODER);
+            succLeftM.setMode(RUN_WITHOUT_ENCODER);
+            succRghtM.setMode(RUN_WITHOUT_ENCODER);
 
             //use encoders for this slidey boi
-            verticalLeftM.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            verticalRghtM.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            verticalRghtM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            verticalLeftM.setMode(STOP_AND_RESET_ENCODER);
+            verticalRghtM.setMode(STOP_AND_RESET_ENCODER);
+            verticalLeftM.setMode(RUN_USING_ENCODER);
+            verticalRghtM.setMode(RUN_USING_ENCODER);
             verticalLeftM.setZeroPowerBehavior(BRAKE);
             verticalRghtM.setZeroPowerBehavior(BRAKE);
 
@@ -138,10 +149,10 @@ public class TeleOp2020_3 extends LinearOpMode{
         waitForStart();
         
         //reset encoders
-        verticalLeftM.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        verticalRghtM.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        verticalRghtM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        verticalLeftM.setMode(STOP_AND_RESET_ENCODER);
+        verticalRghtM.setMode(STOP_AND_RESET_ENCODER);
+        verticalLeftM.setMode(RUN_USING_ENCODER);
+        verticalRghtM.setMode(RUN_USING_ENCODER);
         
         //move servos to start position
         succLeftS.setPosition(0.60);
@@ -160,8 +171,12 @@ public class TeleOp2020_3 extends LinearOpMode{
             telemetry.addData("Hoo", hsvValues[0]);
             telemetry.addData("Satchurashun", hsvValues[1]);
             telemetry.addData("Valyoo", hsvValues[2]);
+            telemetry.addData("distance of stoneDS", stoneDS.getDistance(CM));
             telemetry.addData("stoned?", stoned);
             telemetry.update();
+
+            verticalLeftM.setMode(RUN_USING_ENCODER);
+            verticalRghtM.setMode(RUN_USING_ENCODER);
 
             relativeLayout.post(new Runnable() {
                 public void run() {
@@ -170,13 +185,9 @@ public class TeleOp2020_3 extends LinearOpMode{
             });
 
             //KV can change how fast he drives.
-            if (gamepad1.left_stick_button) {
-                driveSpeed = 0.25;
-            } else {
-                if (gamepad1.right_stick_button) {
-                    driveSpeed = 0.6;
-                }
-            }
+            if (gamepad1.left_stick_button)  driveSpeed = 0.25;
+            if (gamepad1.right_stick_button) driveSpeed = 0.6;
+            if (gamepad1.x)                  driveSpeed = 1.0;
 
             //lets KV move the robot
             //left stick moves the robot without turning, it is driving and strafing
@@ -241,29 +252,21 @@ public class TeleOp2020_3 extends LinearOpMode{
                 }
             }
 
-           /* if (gamepad1.x) {
-                flipperUp = !flipperUp;
-            }
-            if (flipperUp) flipperS.setPosition(0);
-            if (!flipperUp) flipperS.setPosition(1);*/
+            if (gamepad1.dpad_left)  flipperS.setPosition(1.0);
+            if (gamepad1.dpad_right) flipperS.setPosition(0.0);
 
-            //if (gamepad2.back) MikeMode = !MikeMode;
-            
-
+            if (gamepad2.dpad_right) slideSpeed = 1.0;
+            if (gamepad2.dpad_left)  slideSpeed = 0.5;
             if (gamepad2.right_bumper) {
                 verticalLeftM.setPower(0.9);
                 verticalRghtM.setPower(0.9);
             }else {
                 if (gamepad2.left_bumper) {
-                    verticalLeftM.setPower(-1.0);
-                    verticalRghtM.setPower(-1.0);
+                    verticalLeftM.setPower(-slideSpeed);
+                    verticalRghtM.setPower(-slideSpeed);
                 }else {
-                    verticalLeftM.setZeroPowerBehavior(BRAKE);
-                    verticalRghtM.setZeroPowerBehavior(BRAKE);
                     verticalLeftM.setPower(0);
                     verticalRghtM.setPower(0);
-                    verticalLeftM.setZeroPowerBehavior(BRAKE);
-                    verticalRghtM.setZeroPowerBehavior(BRAKE);
                 }
             }
              
@@ -272,24 +275,24 @@ public class TeleOp2020_3 extends LinearOpMode{
             
             if (gamepad2.left_trigger>0.1) {
                 armS.setPosition(0.00);
-                clawS.setPosition(0.05);
+                clawS.setPosition(0.15);
             }else {
                 if (gamepad2.right_trigger>0.1) {
-                    armS.setPosition(0.85);
-                    clawS.setPosition(0.90);
+                    armS.setPosition(0.75);
+                    clawS.setPosition(1.00);
                 }
             }
 
             if (gamepad2.x) liftStone();
             if (gamepad2.y) dropStone();
 
-            /**all this crap below is staging and automatic stuff for the vertical claw*/
+            /**all this crem below is staging and automatic stuff for the vertical claw*/
             //go down all the way
             if (gamepad2.left_stick_button) {
                 armS.setPosition(0.00);
-                clawS.setPosition(0.05);
+                clawS.setPosition(0.15);
                 stoneS.setPosition(1.00);
-                Thread.sleep(500);
+                Thread.sleep(400);
                 verticalRghtM.setTargetPosition(0);
                 verticalLeftM.setTargetPosition(0);
                 verticalRghtM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -358,8 +361,8 @@ public class TeleOp2020_3 extends LinearOpMode{
                 stopDown = false;
                 verticalLeftM.setPower(0);
                 verticalRghtM.setPower(0);
-                verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                verticalRghtM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                verticalLeftM.setMode(RUN_USING_ENCODER);
+                verticalRghtM.setMode(RUN_USING_ENCODER);
                 stoneS.setPosition(0.24);
             }
 
@@ -407,10 +410,11 @@ public class TeleOp2020_3 extends LinearOpMode{
             //actually move, up or down
             if (isStagingDown) {
                 verticalRghtM.setTargetPosition(stageTicks);
-                verticalRghtM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                verticalLeftM.setPower(-0.75);
-                verticalRghtM.setPower(-0.75);
+                verticalLeftM.setTargetPosition(0);
+                verticalRghtM.setMode(RUN_TO_POSITION);
+                verticalLeftM.setMode(RUN_TO_POSITION);
+                verticalLeftM.setPower(-0.5);
+                verticalRghtM.setPower(-0.5);
 
                 while (verticalRghtM.isBusy() && !stopDown) {
                     if (gamepad2.right_stick_button) {
@@ -421,15 +425,16 @@ public class TeleOp2020_3 extends LinearOpMode{
                 isStagingDown = false;
                 verticalLeftM.setPower(0);
                 verticalRghtM.setPower(0);
-                verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                verticalRghtM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                verticalLeftM.setMode(RUN_USING_ENCODER);
+                verticalRghtM.setMode(RUN_USING_ENCODER);
             }
             if (isStagingUp) {
                 verticalRghtM.setTargetPosition(stageTicks);
-                verticalRghtM.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                verticalLeftM.setPower(0.75);
-                verticalRghtM.setPower(0.75);
+                verticalLeftM.setTargetPosition(100000000);
+                verticalRghtM.setMode(RUN_TO_POSITION);
+                verticalLeftM.setMode(RUN_TO_POSITION);
+                verticalLeftM.setPower(0.5);
+                verticalRghtM.setPower(0.5);
 
                 while (verticalRghtM.isBusy() && !stopDown) {
                     if (gamepad2.right_stick_button) {
@@ -440,12 +445,14 @@ public class TeleOp2020_3 extends LinearOpMode{
                 isStagingUp = false;
                 verticalLeftM.setPower(0);
                 verticalRghtM.setPower(0);
-                verticalLeftM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                verticalRghtM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                verticalLeftM.setMode(RUN_USING_ENCODER);
+                verticalRghtM.setMode(RUN_USING_ENCODER);
             }
         }
     }
     private void liftStone() throws InterruptedException {
+        skystoneGrabRghtS.setPosition(0.1);
+        Thread.sleep(50);
         skystoneRghtS.setPosition(0.3);
         Thread.sleep(200);
         skystoneGrabRghtS.setPosition(0.3);
